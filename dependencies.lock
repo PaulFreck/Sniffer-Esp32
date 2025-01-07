@@ -1,0 +1,28 @@
+dependencies:
+  espressif/pcap:
+    component_hash: 0c7b9f33628e4f2e6c0906207df0b666198bc90127c04002fc9c5b2f010ce949
+    dependencies:
+    - name: idf
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=4.4'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.0.2
+  ethernet_init:
+    dependencies: []
+    source:
+      path: /home/paul/esp/v5.3.1/esp-idf/examples/ethernet/basic/components/ethernet_init
+      type: local
+    version: '*'
+  idf:
+    source:
+      type: idf
+    version: 5.3.1
+direct_dependencies:
+- espressif/pcap
+- ethernet_init
+manifest_hash: 072b108669a0fcb1d8ca277e53dfa3221a0903bfac484b40e64e6f92e83af398
+target: esp32
+version: 2.0.0
