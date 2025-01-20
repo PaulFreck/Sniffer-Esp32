@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "simple_sniffer",
-    "project_version":    "7b73a39-dirty",
+    "project_version":    "0f83af9-dirty",
     "project_path":       "/home/paul/networking/p2/blink/simple_sniffer",
     "idf_path":           "/home/paul/esp/v5.3.1/esp-idf",
     "build_dir":          "/home/paul/networking/p2/blink/simple_sniffer/build",

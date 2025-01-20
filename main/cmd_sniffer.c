@@ -210,7 +210,7 @@ static void sniffer_task(void *parameters)
                            //packet_info.microseconds) != ESP_OK) {
             //ESP_LOGW(SNIFFER_TAG, "save captured packet failed");
         //}
-        printf("number: %i, Length: %lu, Packet payload: %lx, Packet Seconds: %lu, Packet Microseconds: %lu \n", packet_number, packet_info.length, *(uint32_t*)packet_info.payload, packet_info.seconds, packet_info.microseconds);
+        printf("number: %.4i, Length: %.3lu, Packet payload: %.7lx, Packet Seconds: %.3lu, Packet Microseconds: %.6lu \n", packet_number, packet_info.length, *(uint32_t*)packet_info.payload, packet_info.seconds, packet_info.microseconds);
         packet_number++;
         free(packet_info.payload);
         if (sniffer->packets_to_sniff > 0) {
