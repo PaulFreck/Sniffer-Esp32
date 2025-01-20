@@ -19,7 +19,7 @@
 #include "esp_console.h"
 #include "esp_app_trace.h"
 #include "cmd_sniffer.h"
-#include "cmd_pcap.h"
+//#include "cmd_pcap.h"
 #include "esp_check.h"
 #include "sdkconfig.h"
 
@@ -32,6 +32,30 @@
 
 
 static const char *SNIFFER_TAG = "cmd_sniffer";
+
+//inserted code, maybe needed?
+/**
+* @brief Link layer Type Definition, used for Pcap reader to decode payload
+*
+*/
+typedef enum {
+    PCAP_LINK_TYPE_LOOPBACK = 0,       /*!< Loopback devices, except for later OpenBSD */
+    PCAP_LINK_TYPE_ETHERNET = 1,       /*!< Ethernet, and Linux loopback devices */
+    PCAP_LINK_TYPE_TOKEN_RING = 6,     /*!< 802.5 Token Ring */
+    PCAP_LINK_TYPE_ARCNET = 7,         /*!< ARCnet */
+    PCAP_LINK_TYPE_SLIP = 8,           /*!< SLIP */
+    PCAP_LINK_TYPE_PPP = 9,            /*!< PPP */
+    PCAP_LINK_TYPE_FDDI = 10,          /*!< FDDI */
+    PCAP_LINK_TYPE_ATM = 100,          /*!< LLC/SNAP encapsulated ATM */
+    PCAP_LINK_TYPE_RAW_IP = 101,       /*!< Raw IP, without link */
+    PCAP_LINK_TYPE_BSD_SLIP = 102,     /*!< BSD/OS SLIP */
+    PCAP_LINK_TYPE_BSD_PPP = 103,      /*!< BSD/OS PPP */
+    PCAP_LINK_TYPE_CISCO_HDLC = 104,   /*!< Cisco HDLC */
+    PCAP_LINK_TYPE_802_11 = 105,       /*!< 802.11 */
+    PCAP_LINK_TYPE_BSD_LOOPBACK = 108, /*!< OpenBSD loopback devices(with AF_value in network byte order) */
+    PCAP_LINK_TYPE_LOCAL_TALK = 114,   /*!< LocalTalk */
+    PCAP_LINK_TYPE_USBPCAP = 249,      /*!< USB packets, beginning with a USBPcap header */
+} pcap_link_type_t;
 
 typedef struct {
     char *filter_name;
@@ -169,6 +193,7 @@ static esp_err_t eth_sniffer_cb(esp_eth_handle_t eth_handle, uint8_t *buffer, ui
 
 static void sniffer_task(void *parameters)
 {
+    int packet_number = 0; //What number packet this is recieved
     sniffer_packet_info_t packet_info;
     sniffer_runtime_t *sniffer = (sniffer_runtime_t *)parameters;
 
@@ -181,10 +206,12 @@ static void sniffer_task(void *parameters)
         if (xQueueReceive(sniffer->work_queue, &packet_info, pdMS_TO_TICKS(SNIFFER_PROCESS_PACKET_TIMEOUT_MS)) != pdTRUE) {
             continue;
         }
-        if (packet_capture(packet_info.payload, packet_info.length, packet_info.seconds,
-                           packet_info.microseconds) != ESP_OK) {
-            ESP_LOGW(SNIFFER_TAG, "save captured packet failed");
-        }
+        //if (packet_capture(packet_info.payload, packet_info.length, packet_info.seconds,
+                           //packet_info.microseconds) != ESP_OK) {
+            //ESP_LOGW(SNIFFER_TAG, "save captured packet failed");
+        //}
+        printf("number: %i, Length: %lu, Packet payload: %lx, Packet Seconds: %lu, Packet Microseconds: %lu \n", packet_number, packet_info.length, *(uint32_t*)packet_info.payload, packet_info.seconds, packet_info.microseconds);
+        packet_number++;
         free(packet_info.payload);
         if (sniffer->packets_to_sniff > 0) {
             sniffer->packets_to_sniff--;
@@ -244,7 +271,7 @@ static esp_err_t sniffer_stop(sniffer_runtime_t *sniffer)
     sniffer->work_queue = NULL;
 
     /* stop pcap session */
-    sniff_packet_stop();
+    //sniff_packet_stop();
 err:
     return ret;
 }
@@ -271,7 +298,7 @@ static esp_err_t sniffer_start(sniffer_runtime_t *sniffer)
     }
 
     /* init a pcap session */
-    ESP_GOTO_ON_ERROR(sniff_packet_start(link_type), err, SNIFFER_TAG, "init pcap session failed");
+    //ESP_GOTO_ON_ERROR(sniff_packet_start(link_type), err, SNIFFER_TAG, "init pcap session failed");
 
     sniffer->is_running = true;
     sniffer->work_queue = xQueueCreate(CONFIG_SNIFFER_WORK_QUEUE_LEN, sizeof(sniffer_packet_info_t));
